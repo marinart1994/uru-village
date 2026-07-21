@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Welcome to Uru Village</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,15 +16,23 @@
       --lime: #dfff48;
       --mint: #72ffe0;
       --night: #180c3f;
+      --app-height: 100vh;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html {
+      min-height: 100%;
+      scroll-behavior: smooth;
+      overscroll-behavior-y: none;
+    }
     body {
       overflow-x: hidden;
       background: var(--sea);
       color: var(--ink);
       font-family: "Noto Sans KR", system-ui, sans-serif;
+      min-height: 100%;
+      touch-action: pan-y;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body::before {
@@ -41,7 +49,7 @@
     }
 
     .journey {
-      min-height: 640vh;
+      min-height: calc(var(--app-height) * 6.4);
       background:
         radial-gradient(circle at 50% 12%, rgba(255,255,255,.9), transparent 13%),
         linear-gradient(180deg, #8df9f0 0%, #31c3e1 33%, #63f19b 62%, #5e35d6 84%, #160c3f 100%);
@@ -50,7 +58,8 @@
     .scene {
       position: sticky;
       top: 0;
-      height: 100vh;
+      height: var(--app-height);
+      min-height: 100svh;
       overflow: hidden;
       isolation: isolate;
     }
@@ -121,7 +130,7 @@
     .plant {
       position: absolute;
       z-index: 6;
-      bottom: -9vh;
+      bottom: -9svh;
       width: clamp(78px, 9vw, 150px);
       height: clamp(190px, 26vw, 420px);
       border-radius: 100% 100% 0 0;
@@ -361,7 +370,7 @@
       position: absolute;
       z-index: 20;
       left: 50%;
-      bottom: 11vh;
+      bottom: max(11svh, calc(env(safe-area-inset-bottom) + 54px));
       width: min(84vw, 660px);
       transform: translateX(-50%);
       text-align: center;
@@ -410,7 +419,7 @@
       position: absolute;
       z-index: 9;
       left: 50%;
-      bottom: -5vh;
+      bottom: -5svh;
       width: min(92vw, 980px);
       height: 28vh;
       opacity: 0;
@@ -446,7 +455,7 @@
     }
 
     .stars { position: absolute; inset: 0; z-index: 18; opacity: 0; }
-    .falling-star { left: 50%; top: -12vh; width: 36px; height: 36px; opacity: 0; }
+    .falling-star { left: 50%; top: -12svh; width: 36px; height: 36px; opacity: 0; }
 
     .sound-toggle {
       position: fixed;
@@ -497,10 +506,18 @@
     }
 
     @media (max-width: 700px) {
-      .egg-wrap { width: min(72vw, 320px); top: 56%; }
-      .uru { width: min(72vw, 310px); height: min(72vw, 310px); }
-      .copy { top: 10%; }
+      .journey { min-height: calc(var(--app-height) * 7.2); }
+      .egg-wrap { width: min(72vw, 320px); top: 55%; }
+      .uru { width: min(70vw, 300px); height: min(70vw, 300px); top: 58%; }
+      .copy { top: max(8svh, calc(env(safe-area-inset-top) + 26px)); }
       .plant { width: 80px; height: 210px; }
+      .sound-toggle {
+        right: max(12px, env(safe-area-inset-right));
+        top: max(12px, env(safe-area-inset-top));
+      }
+      .hint {
+        bottom: max(18px, calc(env(safe-area-inset-bottom) + 14px));
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -509,7 +526,7 @@
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
       }
-      .journey { min-height: 420vh; }
+      .journey { min-height: calc(var(--app-height) * 4.2); }
     }
   </style>
 </head>
@@ -601,6 +618,31 @@
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
+    const setAppHeight = () => {
+      document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
+    };
+
+    setAppHeight();
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        setAppHeight();
+        ScrollTrigger.refresh();
+      }, 350);
+    });
+    window.addEventListener("pageshow", () => {
+      setAppHeight();
+      ScrollTrigger.refresh();
+    });
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setAppHeight();
+        ScrollTrigger.refresh();
+      }, 180);
+    });
+
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const soundButton = document.querySelector(".sound-toggle");
     let ctx;
@@ -628,6 +670,11 @@
     });
 
     if (!reduced) {
+      ScrollTrigger.config({
+        ignoreMobileResize: true,
+        autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+      });
+
       gsap.to(".bubble", {
         yPercent: -18,
         stagger: .18,
@@ -688,6 +735,11 @@
 
       gsap.to(".uru", { y: "+=12", repeat: -1, yoyo: true, duration: 1.8, ease: "sine.inOut" });
       gsap.to(".orb", { y: -18, repeat: -1, yoyo: true, stagger: .25, duration: 2.2, ease: "sine.inOut" });
+
+      window.addEventListener("load", () => {
+        setAppHeight();
+        ScrollTrigger.refresh();
+      });
     }
   </script>
 </body>
