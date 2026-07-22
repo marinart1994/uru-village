@@ -226,18 +226,18 @@
       position: absolute;
       z-index: 17;
       left: 50%;
-      top: calc(55% - min(28vw, 218px));
+      top: calc(55% - min(17vw, 132px));
       transform: translateX(-50%);
-      width: min(78vw, 420px);
+      width: max-content;
       border: 0;
       background: transparent;
       color: #fff9b8;
       font-family: "Gaegu", cursive;
-      font-size: clamp(1.25rem, 3vw, 2.1rem);
-      line-height: 1.18;
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      line-height: 1;
       font-weight: 700;
       text-align: center;
-      opacity: .95;
+      opacity: .82;
       text-shadow: 0 4px 14px rgba(33, 43, 112, .52), 0 0 18px rgba(255,255,255,.42);
       -webkit-text-stroke: .2px rgba(96, 88, 142, .18);
       cursor: pointer;
@@ -246,13 +246,7 @@
     }
 
     .music-hint::after {
-      content: "";
-      display: block;
-      width: 1px;
-      height: 24px;
-      margin: 8px auto 0;
-      background: rgba(255,249,184,.72);
-      box-shadow: 0 0 12px rgba(255,249,184,.6);
+      content: none;
     }
 
     body.audio-started .music-hint {
@@ -659,9 +653,8 @@
     }
 
     .mobile-hatch .music-hint {
-      top: max(34svh, 220px);
-      width: min(82vw, 330px);
-      font-size: clamp(1.08rem, 5vw, 1.45rem);
+      top: max(42svh, 258px);
+      font-size: clamp(1rem, 4.4vw, 1.25rem);
     }
 
     .mobile-hatch-egg::before {
@@ -1024,8 +1017,8 @@
       .journey { min-height: calc(var(--app-height) * 7.2); }
       .egg-wrap { width: min(72vw, 320px); top: 55%; }
       .music-hint {
-        top: max(29svh, calc(env(safe-area-inset-top) + 168px));
-        font-size: clamp(1.12rem, 5vw, 1.55rem);
+        top: max(43svh, calc(env(safe-area-inset-top) + 238px));
+        font-size: clamp(1rem, 4.4vw, 1.28rem);
       }
       .uru { width: min(70vw, 300px); height: min(70vw, 300px); top: 58%; }
       .copy { top: max(8svh, calc(env(safe-area-inset-top) + 26px)); }
@@ -1127,8 +1120,8 @@
       }
 
       .mobile-hatch .music-hint {
-        top: max(34svh, 190px);
-        font-size: clamp(1rem, 4.8vw, 1.32rem);
+        top: max(42svh, 218px);
+        font-size: clamp(.95rem, 4.2vw, 1.18rem);
       }
 
       .mobile-hatch .uru {
@@ -1171,7 +1164,7 @@
       }
 
       .mobile-hatch .music-hint {
-        top: max(31svh, 156px);
+        top: max(40svh, 184px);
       }
 
       .mobile-hatch .uru {
@@ -1261,7 +1254,7 @@
           <path d="M4 36 L42 58 L69 25 L98 55 L131 18 L158 48 L190 30 L224 64 L258 38" />
         </svg>
       </div>
-      <button class="music-hint" type="button">알을 톡 터치하면<br>노래가 흘러나와요</button>
+      <button class="music-hint" type="button">touch</button>
 
       <div class="shell" aria-hidden="true">
         <div class="shell-piece shell-left"></div>
@@ -1322,7 +1315,7 @@
           <p>바다 속 조용한 알 하나가<br>천천히 깨어나고 있어요.</p>
         </div>
         <div class="mobile-hatch-egg" aria-hidden="true"></div>
-        <button class="music-hint" type="button">알을 톡 터치하면<br>노래가 흘러나와요</button>
+        <button class="music-hint" type="button">touch</button>
         <div class="mobile-hatch-shells" aria-hidden="true">
           <span class="mobile-shell"></span>
           <span class="mobile-shell right"></span>
