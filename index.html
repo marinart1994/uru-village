@@ -1432,25 +1432,88 @@
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const soundButton = document.querySelector(".sound-toggle");
     let ctx;
-    let osc;
-    let gain;
+    let masterGain;
+    let ambienceGain;
+    let ambienceNodes = [];
     let audioOn = false;
+    const soundState = {
+      crack: false,
+      birth: false,
+      star: false,
+    };
+
+    const ensureAudio = () => {
+      if (ctx) return;
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = ctx.createGain();
+      ambienceGain = ctx.createGain();
+      masterGain.gain.value = 0;
+      ambienceGain.gain.value = 0.035;
+      ambienceGain.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      [174, 261.63, 329.63].forEach((frequency, index) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.type = index === 0 ? "sine" : "triangle";
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = index === 0 ? 0.36 : 0.12;
+        oscillator.connect(gainNode);
+        gainNode.connect(ambienceGain);
+        oscillator.start();
+        ambienceNodes.push({ oscillator, gainNode });
+      });
+
+      const shimmer = () => {
+        if (!audioOn || !ctx) return;
+        playTone(880 + Math.random() * 260, 0.08, "sine", 0.018, 0.02);
+        setTimeout(shimmer, 1800 + Math.random() * 2200);
+      };
+      setTimeout(shimmer, 1000);
+    };
+
+    const playTone = (frequency, duration = 0.16, type = "sine", volume = 0.08, delay = 0) => {
+      if (!ctx || !audioOn) return;
+      const now = ctx.currentTime + delay;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, now);
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(volume, now + 0.018);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      oscillator.connect(gainNode);
+      gainNode.connect(masterGain);
+      oscillator.start(now);
+      oscillator.stop(now + duration + 0.03);
+    };
+
+    const playCuteSound = (kind) => {
+      if (!ctx || !audioOn) return;
+      if (kind === "crack") {
+        playTone(520, 0.07, "triangle", 0.06, 0);
+        playTone(780, 0.09, "sine", 0.05, 0.055);
+      }
+      if (kind === "birth") {
+        playTone(523.25, 0.12, "sine", 0.07, 0);
+        playTone(659.25, 0.14, "sine", 0.07, 0.09);
+        playTone(987.77, 0.18, "triangle", 0.055, 0.18);
+      }
+      if (kind === "star") {
+        playTone(1046.5, 0.1, "sine", 0.06, 0);
+        playTone(1318.5, 0.13, "triangle", 0.05, 0.08);
+        playTone(1760, 0.16, "sine", 0.035, 0.18);
+      }
+    };
 
     soundButton.addEventListener("click", () => {
-      if (!ctx) {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-        osc = ctx.createOscillator();
-        gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.value = 174;
-        gain.gain.value = 0;
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-      }
+      ensureAudio();
+      if (ctx.state === "suspended") ctx.resume();
 
       audioOn = !audioOn;
-      gain.gain.setTargetAtTime(audioOn ? 0.025 : 0, ctx.currentTime, 0.1);
+      masterGain.gain.setTargetAtTime(audioOn ? 0.18 : 0.0001, ctx.currentTime, 0.12);
+      if (audioOn) playCuteSound("birth");
       soundButton.textContent = audioOn ? "♫" : "♪";
       soundButton.setAttribute("aria-label", audioOn ? "배경음 끄기" : "배경음 켜기");
     });
@@ -1486,6 +1549,19 @@
           const birth = between(progress, .46, .76);
           const reveal = between(progress, .58, .9);
           const wobble = Math.sin(progress * Math.PI * 12) * crack * (1 - birth) * 7;
+
+          if (crack > .35 && !soundState.crack) {
+            soundState.crack = true;
+            playCuteSound("crack");
+          }
+          if (birth > .38 && !soundState.birth) {
+            soundState.birth = true;
+            playCuteSound("birth");
+          }
+          if (progress < .12) {
+            soundState.crack = false;
+            soundState.birth = false;
+          }
 
           hatch.style.setProperty("--hatch-progress", progress.toFixed(3));
           hatch.style.setProperty("--hatch-crack", crack.toFixed(3));
@@ -1576,6 +1652,11 @@
             if (star) {
               const arc = Math.sin(raw * Math.PI) * -32;
               star.style.transform = `translate(${8 + 58 * raw}vw, ${-8 + 58 * raw + arc}svh) rotate(${raw * 220}deg) scale(${1 + center * .22})`;
+              if (raw > .38 && !soundState.star) {
+                soundState.star = true;
+                playCuteSound("star");
+              }
+              if (raw < .15) soundState.star = false;
             }
             if (uru) {
               uru.style.transform = `translateY(${12 - 26 * center}px) scale(${.82 + center * .08})`;
@@ -1627,6 +1708,7 @@
         .to(".egg-wrap", { y: 6, rotate: 4, duration: .2 }, 0.22)
         .to(".story-hello", { opacity: 1, y: -18, duration: .35 }, 0.2)
         .to(".story-hello", { opacity: 0, y: -68, duration: .3 }, 0.43)
+        .call(() => playCuteSound("crack"), [], 0.34)
         .to(".crack", { opacity: 1, duration: .2 }, 0.34)
         .to(".crack path", { strokeDashoffset: 0, duration: .42 }, 0.36)
         .to(".egg-glow", { opacity: 1, scale: 1.18, duration: .36 }, 0.48)
@@ -1635,6 +1717,7 @@
         .to(".shell", { opacity: 1, duration: .08 }, 0.62)
         .fromTo(".shell-left", { x: 0, rotate: 0 }, { x: -80, y: 20, rotate: -18, duration: .44 }, 0.62)
         .fromTo(".shell-right", { x: 0, rotate: 0 }, { x: 80, y: 20, rotate: 18, duration: .44 }, 0.62)
+        .call(() => playCuteSound("birth"), [], 0.64)
         .to(".uru", { opacity: 1, scale: 1, y: -42, duration: .5, ease: "back.out(1.4)" }, 0.64)
         .to(".story-memory", { opacity: 1, y: -22, duration: .38 }, 0.74)
         .to(".story-memory", { opacity: 0, y: -72, duration: .34 }, 1.04)
@@ -1652,6 +1735,7 @@
         .to(".forest", { opacity: .25, duration: .55 }, 2.24)
         .to(".path", { opacity: .18, duration: .4 }, 2.3)
         .to(".stars", { opacity: 1, duration: .3 }, 2.36)
+        .call(() => playCuteSound("star"), [], 2.38)
         .to(".orb", { opacity: .25, duration: .25 }, 2.38)
         .to(".uru", { x: 0, y: "10vh", scale: .82, duration: .45 }, 2.42)
         .to(".ending-copy", { opacity: 1, y: 16, duration: .42 }, 2.5)
