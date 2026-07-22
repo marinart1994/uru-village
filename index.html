@@ -498,6 +498,165 @@
       display: none;
     }
 
+    .mobile-hatch {
+      position: relative;
+      display: none;
+      height: 330svh;
+      background:
+        radial-gradient(circle at 76% 15%, rgba(255,255,255,.8), transparent 0 7%, transparent 11%),
+        radial-gradient(circle at 16% 27%, rgba(255,255,255,.42), transparent 0 4%, transparent 8%),
+        radial-gradient(ellipse at 50% 100%, rgba(255,255,255,.54), transparent 34%),
+        linear-gradient(180deg, #97fbf1 0%, #45cfe6 58%, #67f1c4 100%);
+      isolation: isolate;
+      --hatch-progress: 0;
+      --hatch-reveal: 0;
+      --hatch-crack: 0;
+      --hatch-birth: 0;
+    }
+
+    .mobile-hatch-stage {
+      position: sticky;
+      top: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: max(54px, env(safe-area-inset-top)) 22px max(48px, env(safe-area-inset-bottom));
+      text-align: center;
+    }
+
+    .mobile-hatch-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(102deg, rgba(255,255,255,.24) 0 1px, transparent 1px 8px),
+        repeating-linear-gradient(14deg, rgba(112,52,170,.12) 0 1px, transparent 1px 7px);
+    }
+
+    .mobile-hatch-copy {
+      position: absolute;
+      z-index: 8;
+      top: max(8svh, calc(env(safe-area-inset-top) + 26px));
+      left: 50%;
+      width: min(88vw, 420px);
+      transform: translateX(-50%);
+      color: white;
+      text-shadow: 0 5px 24px rgba(54,73,145,.24);
+      opacity: calc(1 - var(--hatch-progress) * 1.45);
+    }
+
+    .mobile-hatch-copy p {
+      margin-top: 14px;
+      font-size: 1rem;
+      line-height: 1.75;
+      font-weight: 700;
+      color: rgba(255,255,255,.96);
+    }
+
+    .mobile-hatch-message {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      bottom: max(11svh, calc(env(safe-area-inset-bottom) + 54px));
+      width: min(86vw, 420px);
+      transform: translateX(-50%) translateY(calc((1 - var(--hatch-reveal)) * 24px));
+      opacity: var(--hatch-reveal);
+      font-family: "Gaegu", cursive;
+      font-size: clamp(1.7rem, 8vw, 2.55rem);
+      line-height: 1.16;
+      font-weight: 700;
+      color: #fff9b8;
+      text-shadow: 0 6px 26px rgba(53,40,91,.28);
+    }
+
+    .mobile-hatch-egg {
+      position: absolute;
+      z-index: 9;
+      left: 50%;
+      top: 53%;
+      width: min(68vw, 292px);
+      aspect-ratio: .78;
+      border-radius: 50% 50% 45% 45% / 58% 58% 42% 42%;
+      transform: translate(-50%, -50%);
+      opacity: calc(1 - var(--hatch-birth));
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,255,255,.95), transparent 18%),
+        radial-gradient(circle at 70% 78%, rgba(255,128,213,.45), transparent 28%),
+        radial-gradient(circle at 34% 74%, rgba(126,255,222,.45), transparent 30%),
+        linear-gradient(135deg, #fffbe3, #ffe5ef 42%, #fff4b3 74%, #f7fff2);
+      box-shadow: inset -22px -32px 54px rgba(255,161,117,.22), inset 26px 18px 60px rgba(255,255,255,.62);
+      filter: blur(calc(var(--hatch-birth) * 10px)) drop-shadow(0 28px 40px rgba(41,101,152,.22));
+      will-change: transform, opacity, filter;
+    }
+
+    .mobile-hatch-egg::before {
+      content: "";
+      position: absolute;
+      left: 19%;
+      top: 49%;
+      width: 64%;
+      height: 10%;
+      opacity: var(--hatch-crack);
+      background: linear-gradient(135deg, transparent 0 10%, rgba(108,91,118,.5) 11% 15%, transparent 16% 29%, rgba(108,91,118,.5) 30% 35%, transparent 36% 50%, rgba(108,91,118,.5) 51% 56%, transparent 57% 100%);
+      filter: drop-shadow(0 0 9px rgba(255,255,159,.8));
+      clip-path: polygon(0 38%, 17% 68%, 29% 22%, 43% 62%, 55% 15%, 68% 56%, 82% 35%, 100% 70%, 100% 82%, 82% 47%, 68% 70%, 55% 29%, 43% 76%, 29% 36%, 17% 82%, 0 50%);
+    }
+
+    .mobile-hatch-egg::after {
+      content: "";
+      position: absolute;
+      inset: 14%;
+      z-index: -1;
+      border-radius: 50%;
+      opacity: calc(var(--hatch-crack) * .9);
+      background: radial-gradient(circle, rgba(255,255,147,.95), rgba(255,127,213,.38) 42%, transparent 70%);
+      filter: blur(18px);
+    }
+
+    .mobile-hatch-shells {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      top: 64%;
+      width: min(76vw, 330px);
+      height: 110px;
+      transform: translateX(-50%);
+      opacity: var(--hatch-birth);
+      pointer-events: none;
+    }
+
+    .mobile-hatch-shells .mobile-shell {
+      position: absolute;
+      bottom: 0;
+      width: 48%;
+    }
+
+    .mobile-hatch-shells .mobile-shell:first-child {
+      left: 0;
+    }
+
+    .mobile-hatch-shells .mobile-shell.right {
+      right: 0;
+    }
+
+    .mobile-hatch .uru {
+      position: absolute;
+      z-index: 11;
+      left: 50%;
+      top: 55%;
+      width: min(70vw, 300px);
+      height: min(70vw, 300px);
+      margin: 0;
+      opacity: var(--hatch-birth);
+      transform: translate(-50%, -50%) scale(calc(.62 + var(--hatch-birth) * .38));
+      animation: none;
+      will-change: transform, opacity;
+    }
+
     .mobile-panel {
       position: relative;
       min-height: 108svh;
@@ -765,8 +924,13 @@
         display: none;
       }
 
-      .mobile-story {
+      .mobile-story,
+      .mobile-hatch {
         display: block;
+      }
+
+      .mobile-panel.mobile-cut {
+        display: none;
       }
     }
 
@@ -861,8 +1025,41 @@
       </div>
     </section>
 
+    <section class="mobile-hatch" aria-label="우루가 태어나는 순간">
+      <div class="mobile-hatch-stage">
+        <span class="mobile-orb" style="--left: 12%; --top: 24%; --size: 42px; --color: #ffffff"></span>
+        <span class="mobile-orb" style="--left: 78%; --top: 18%; --size: 70px; --color: #dfffff"></span>
+        <span class="mobile-orb" style="--left: 18%; --top: 72%; --size: 48px; --color: #ff93dd"></span>
+        <div class="mobile-hatch-copy">
+          <span class="eyebrow">멸종위기동물들이 살아가는 작은 마을</span>
+          <h1 class="mobile-title">Welcome to<br>Uru Village</h1>
+          <p>바다 속 조용한 알 하나가<br>천천히 깨어나고 있어요.</p>
+        </div>
+        <div class="mobile-hatch-egg" aria-hidden="true"></div>
+        <div class="mobile-hatch-shells" aria-hidden="true">
+          <span class="mobile-shell"></span>
+          <span class="mobile-shell right"></span>
+        </div>
+        <div class="uru" aria-label="우루 캐릭터">
+          <div class="gill left"></div>
+          <div class="gill right"></div>
+          <div class="uru-body"></div>
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <div class="uru-head">
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+            <span class="mouth"></span>
+          </div>
+        </div>
+        <p class="mobile-hatch-message">안녕!<br>나는 우루야.</p>
+      </div>
+    </section>
+
     <section class="mobile-story" aria-label="우루 빌리지 모바일 여행">
-      <article class="mobile-panel mobile-sea" data-mobile-scene="egg">
+      <article class="mobile-panel mobile-sea mobile-cut" data-mobile-scene="egg">
         <span class="mobile-orb" style="--left: 12%; --top: 24%; --size: 42px; --color: #ffffff"></span>
         <span class="mobile-orb" style="--left: 78%; --top: 18%; --size: 70px; --color: #dfffff"></span>
         <div class="mobile-content">
@@ -873,7 +1070,7 @@
         </div>
       </article>
 
-      <article class="mobile-panel mobile-birth" data-mobile-scene="crack">
+      <article class="mobile-panel mobile-birth mobile-cut" data-mobile-scene="crack">
         <span class="mobile-orb" style="--left: 18%; --top: 28%; --size: 54px; --color: #ff93dd"></span>
         <span class="mobile-orb" style="--left: 72%; --top: 66%; --size: 46px; --color: #fff56e"></span>
         <div class="mobile-content">
@@ -882,7 +1079,7 @@
         </div>
       </article>
 
-      <article class="mobile-panel mobile-birth" data-mobile-scene="birth">
+      <article class="mobile-panel mobile-birth mobile-cut" data-mobile-scene="birth">
         <span class="mobile-orb" style="--left: 14%; --top: 68%; --size: 44px; --color: #72ffe0"></span>
         <span class="mobile-orb" style="--left: 82%; --top: 24%; --size: 62px; --color: #fff56e"></span>
         <div class="mobile-content">
@@ -1034,9 +1231,52 @@
       if (mobileStoryStarted) return;
       mobileStoryStarted = true;
       const panels = [...document.querySelectorAll(".mobile-panel")];
+      const hatch = document.querySelector(".mobile-hatch");
+      const hatchEgg = document.querySelector(".mobile-hatch-egg");
+      const hatchUru = document.querySelector(".mobile-hatch .uru");
+      const hatchLeftShell = document.querySelector(".mobile-hatch-shells .mobile-shell:not(.right)");
+      const hatchRightShell = document.querySelector(".mobile-hatch-shells .mobile-shell.right");
+      const hatchMessage = document.querySelector(".mobile-hatch-message");
 
       const update = () => {
         const vh = window.innerHeight || 1;
+
+        if (hatch) {
+          const rect = hatch.getBoundingClientRect();
+          const hatchDistance = Math.max(1, rect.height - vh);
+          const progress = clamp(-rect.top / hatchDistance);
+          const crack = between(progress, .18, .48);
+          const birth = between(progress, .46, .76);
+          const reveal = between(progress, .58, .9);
+          const wobble = Math.sin(progress * Math.PI * 12) * crack * (1 - birth) * 7;
+
+          hatch.style.setProperty("--hatch-progress", progress.toFixed(3));
+          hatch.style.setProperty("--hatch-crack", crack.toFixed(3));
+          hatch.style.setProperty("--hatch-birth", birth.toFixed(3));
+          hatch.style.setProperty("--hatch-reveal", reveal.toFixed(3));
+
+          if (hatchEgg) {
+            hatchEgg.style.transform = `translate(-50%, -50%) translateY(${-18 * progress}px) rotate(${wobble}deg) scale(${1 + crack * .07 + birth * .2})`;
+          }
+
+          if (hatchUru) {
+            hatchUru.style.transform = `translate(-50%, -50%) translateY(${38 - birth * 92}px) scale(${.62 + birth * .38})`;
+          }
+
+          if (hatchLeftShell) {
+            hatchLeftShell.style.transform = `translate(${-48 * birth}px, ${18 * birth}px) rotate(${-16 * birth}deg)`;
+          }
+
+          if (hatchRightShell) {
+            hatchRightShell.style.transform = `scaleX(-1) translate(${-48 * birth}px, ${18 * birth}px) rotate(${-16 * birth}deg)`;
+          }
+
+          if (hatchMessage) {
+            hatchMessage.innerHTML = progress < .58
+              ? "안녕!<br>나는 우루야."
+              : "세상에서 사라져가는 친구들을<br>기억하기 위해 태어났어.";
+          }
+        }
 
         panels.forEach((panel) => {
           const rect = panel.getBoundingClientRect();
