@@ -244,10 +244,12 @@
       line-height: 1.18;
       font-weight: 700;
       text-align: center;
-      text-shadow: 0 4px 15px rgba(40, 52, 126, .36), 0 0 18px rgba(255,255,255,.35);
+      opacity: .95;
+      text-shadow: 0 4px 14px rgba(33, 43, 112, .52), 0 0 18px rgba(255,255,255,.42);
+      -webkit-text-stroke: .2px rgba(96, 88, 142, .18);
       cursor: pointer;
       animation: musicHintFloat 1.8s ease-in-out infinite alternate;
-      transition: opacity .28s ease, transform .28s ease;
+      transition: opacity .7s ease, transform .7s ease;
     }
 
     .music-hint::after {
@@ -264,6 +266,7 @@
       opacity: 0;
       pointer-events: none;
       transform: translateX(-50%) translateY(-12px);
+      transition-delay: 2.1s;
     }
 
     .egg {
@@ -1498,6 +1501,7 @@
     let delayNode;
     let feedbackGain;
     let bgmLoopTimer;
+    let lastBgmPhraseAt = -99;
     let audioOn = false;
     const soundState = {
       crack: false,
@@ -1545,28 +1549,40 @@
 
     const playBgmNote = (frequency, delay = 0, duration = 0.46, volume = 0.06) => {
       playTone(frequency, duration, "sine", volume, delay, melodyGain);
-      playTone(frequency * 2, duration * 0.55, "triangle", volume * 0.26, delay + 0.015, melodyGain);
+      playTone(frequency * 2, duration * 0.52, "triangle", volume * 0.2, delay + 0.018, melodyGain);
+    };
+
+    const playSoftChord = (notes, delay = 0, volume = 0.026) => {
+      notes.forEach((frequency, index) => {
+        playTone(frequency, 1.45, "sine", volume * (index === 0 ? .9 : 1), delay + index * .055, melodyGain);
+      });
     };
 
     const playBgmPhrase = () => {
       if (!ctx || !audioOn) return;
+      if (ctx.currentTime - lastBgmPhraseAt < 2) return;
+      lastBgmPhraseAt = ctx.currentTime;
+      playSoftChord([293.66, 369.99, 440], 0, .024);
+      playSoftChord([329.63, 392, 493.88], 3.18, .021);
+      playSoftChord([261.63, 329.63, 392], 6.42, .02);
       const phrase = [
-        [523.25, 0], [659.25, .56], [783.99, 1.12], [659.25, 1.72],
-        [587.33, 2.48], [698.46, 3.06], [880, 3.68], [783.99, 4.28],
-        [659.25, 5.18], [523.25, 5.82], [587.33, 6.42], [783.99, 7.12],
+        [587.33, .34], [659.25, .92], [739.99, 1.54], [659.25, 2.18],
+        [493.88, 3.12], [587.33, 3.76], [659.25, 4.38], [880, 5.12],
+        [739.99, 6.16], [659.25, 6.84], [587.33, 7.48], [440, 8.28],
+        [493.88, 9.02], [587.33, 9.74],
       ];
       phrase.forEach(([frequency, delay], index) => {
-        playBgmNote(frequency, delay, index % 4 === 2 ? .64 : .46, index % 3 === 0 ? .064 : .05);
+        playBgmNote(frequency, delay, index % 4 === 2 ? .78 : .54, index % 3 === 0 ? .052 : .042);
       });
-      playTone(1046.5, .22, "sine", .024, 7.96, melodyGain);
-      playTone(1318.5, .2, "sine", .018, 8.32, melodyGain);
+      playTone(987.77, .22, "sine", .018, 10.26, melodyGain);
+      playTone(1174.66, .2, "sine", .014, 10.62, melodyGain);
     };
 
     const startBgmLoop = () => {
       if (bgmLoopTimer) return;
       const loop = () => {
         if (audioOn) playBgmPhrase();
-        bgmLoopTimer = setTimeout(loop, 9800);
+        bgmLoopTimer = setTimeout(loop, 12600);
       };
       bgmLoopTimer = setTimeout(loop, 260);
     };
@@ -1824,7 +1840,7 @@
         .to(".egg-wrap", { y: -12, rotate: -3, duration: .25 }, 0.13)
         .to(".egg-wrap", { y: 6, rotate: 4, duration: .2 }, 0.22)
         .to(".story-hello", { opacity: 1, y: -18, duration: .35 }, 0.2)
-        .to(".music-hint", { opacity: 0, y: -22, pointerEvents: "none", duration: .2 }, 0.2)
+        .to(".music-hint", { opacity: 0, y: -22, pointerEvents: "none", duration: .42 }, 0.58)
         .to(".story-hello", { opacity: 0, y: -68, duration: .3 }, 0.43)
         .call(() => playCuteSound("crack"), [], 0.34)
         .to(".crack", { opacity: 1, duration: .2 }, 0.34)
