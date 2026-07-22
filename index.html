@@ -254,7 +254,6 @@
       opacity: 0;
       pointer-events: none;
       transform: translateX(-50%) translateY(-12px);
-      transition-delay: 2.1s;
     }
 
     .egg {
@@ -1499,7 +1498,7 @@
       delayNode = ctx.createDelay(1.2);
       feedbackGain = ctx.createGain();
       masterGain.gain.value = 0;
-      melodyGain.gain.value = 0.16;
+      melodyGain.gain.value = 0.22;
       delayNode.delayTime.value = 0.42;
       feedbackGain.gain.value = 0.18;
       melodyGain.connect(masterGain);
@@ -1578,7 +1577,7 @@
       ensureAudio();
       audioOn = true;
       const resume = ctx.state === "suspended" ? ctx.resume().catch(() => {}) : Promise.resolve();
-      masterGain.gain.setTargetAtTime(0.3, ctx.currentTime, 0.18);
+      masterGain.gain.setTargetAtTime(0.42, ctx.currentTime, 0.18);
       setSoundButton();
       resume.then(() => {
         if (!audioOn) return;
@@ -1610,7 +1609,7 @@
       if (ctx.state === "suspended") ctx.resume();
 
       audioOn = !audioOn;
-      masterGain.gain.setTargetAtTime(audioOn ? 0.3 : 0.0001, ctx.currentTime, 0.16);
+      masterGain.gain.setTargetAtTime(audioOn ? 0.42 : 0.0001, ctx.currentTime, 0.16);
       if (audioOn) {
         playCuteSound("birth");
         playBgmPhrase();
