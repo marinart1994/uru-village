@@ -594,15 +594,11 @@
     .mobile-hatch-copy {
       position: absolute;
       z-index: 14;
-      top: max(8svh, calc(env(safe-area-inset-top) + 26px));
+      top: max(7svh, calc(env(safe-area-inset-top) + 22px));
       left: 50%;
-      width: min(84vw, 360px);
+      width: min(92vw, 390px);
       transform: translateX(-50%);
       color: white;
-      padding: 8px 12px 10px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(91, 215, 234, .24), rgba(255,255,255,.1));
-      backdrop-filter: blur(6px);
       text-shadow: 0 3px 10px rgba(35, 48, 118, .32), 0 0 18px rgba(255,255,255,.34);
       opacity: calc(1 - var(--hatch-progress) * 1.45);
     }
@@ -636,7 +632,7 @@
       position: absolute;
       z-index: 9;
       left: 50%;
-      top: 48%;
+      top: 50%;
       width: min(62vw, 268px);
       aspect-ratio: .78;
       border-radius: 50% 50% 45% 45% / 58% 58% 42% 42%;
@@ -653,7 +649,7 @@
     }
 
     .mobile-hatch .music-hint {
-      top: max(42svh, 258px);
+      top: 43%;
       font-size: clamp(1rem, 4.4vw, 1.25rem);
     }
 
@@ -806,22 +802,26 @@
 
     .mobile-title {
       font-family: "Gaegu", cursive;
-      font-size: clamp(2.45rem, 12vw, 4rem);
-      line-height: .92;
+      font-size: clamp(1.72rem, 7.8vw, 2.35rem);
+      line-height: 1;
       color: #fff8bf;
       letter-spacing: 0;
+      white-space: nowrap;
     }
 
     .mobile-title .title-small {
-      display: block;
-      font-size: .64em;
-      line-height: 1;
+      display: inline;
+      font-size: 1em;
     }
 
     .mobile-title .title-main {
-      display: block;
-      margin-top: 2px;
-      line-height: .9;
+      display: inline;
+      margin-top: 0;
+      line-height: 1;
+    }
+
+    .mobile-title .title-small::after {
+      content: " ";
     }
 
     .mobile-text {
@@ -1095,7 +1095,7 @@
       }
 
       .mobile-title {
-        font-size: clamp(2rem, 10.5vw, 3.15rem);
+        font-size: clamp(1.48rem, 7.2vw, 2rem);
       }
 
       .mobile-text,
@@ -1116,11 +1116,11 @@
 
       .mobile-hatch-egg {
         width: min(54vw, 220px);
-        top: 48%;
+        top: 50%;
       }
 
       .mobile-hatch .music-hint {
-        top: max(42svh, 218px);
+        top: 43%;
         font-size: clamp(.95rem, 4.2vw, 1.18rem);
       }
 
@@ -1159,12 +1159,12 @@
       }
 
       .mobile-hatch-egg {
-        top: 47%;
+        top: 50%;
         width: min(48vw, 210px);
       }
 
       .mobile-hatch .music-hint {
-        top: max(40svh, 184px);
+        top: 42%;
       }
 
       .mobile-hatch .uru {
@@ -1174,7 +1174,7 @@
       }
 
       .mobile-title {
-        font-size: clamp(1.9rem, 9.5vw, 3rem);
+        font-size: clamp(1.35rem, 6.8vw, 1.8rem);
       }
 
       .mobile-text,
