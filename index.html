@@ -229,6 +229,43 @@
       filter: drop-shadow(0 32px 45px rgba(41,101,152,.2));
     }
 
+    .music-hint {
+      position: absolute;
+      z-index: 17;
+      left: 50%;
+      top: calc(55% - min(28vw, 218px));
+      transform: translateX(-50%);
+      width: min(78vw, 420px);
+      border: 0;
+      background: transparent;
+      color: #fff9b8;
+      font-family: "Gaegu", cursive;
+      font-size: clamp(1.25rem, 3vw, 2.1rem);
+      line-height: 1.18;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 4px 15px rgba(40, 52, 126, .36), 0 0 18px rgba(255,255,255,.35);
+      cursor: pointer;
+      animation: musicHintFloat 1.8s ease-in-out infinite alternate;
+      transition: opacity .28s ease, transform .28s ease;
+    }
+
+    .music-hint::after {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 24px;
+      margin: 8px auto 0;
+      background: rgba(255,249,184,.72);
+      box-shadow: 0 0 12px rgba(255,249,184,.6);
+    }
+
+    body.audio-started .music-hint {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-12px);
+    }
+
     .egg {
       position: absolute;
       inset: 0;
@@ -625,6 +662,12 @@
       will-change: transform, opacity, filter;
     }
 
+    .mobile-hatch .music-hint {
+      top: max(34svh, 220px);
+      width: min(82vw, 330px);
+      font-size: clamp(1.08rem, 5vw, 1.45rem);
+    }
+
     .mobile-hatch-egg::before {
       content: "";
       position: absolute;
@@ -976,9 +1019,18 @@
       to { transform: translateY(12px) rotate(12deg); }
     }
 
+    @keyframes musicHintFloat {
+      from { transform: translateX(-50%) translateY(0); }
+      to { transform: translateX(-50%) translateY(-8px); }
+    }
+
     @media (max-width: 700px) {
       .journey { min-height: calc(var(--app-height) * 7.2); }
       .egg-wrap { width: min(72vw, 320px); top: 55%; }
+      .music-hint {
+        top: max(29svh, calc(env(safe-area-inset-top) + 168px));
+        font-size: clamp(1.12rem, 5vw, 1.55rem);
+      }
       .uru { width: min(70vw, 300px); height: min(70vw, 300px); top: 58%; }
       .copy { top: max(8svh, calc(env(safe-area-inset-top) + 26px)); }
       .plant { width: 80px; height: 210px; }
@@ -1083,6 +1135,11 @@
         top: 48%;
       }
 
+      .mobile-hatch .music-hint {
+        top: max(34svh, 190px);
+        font-size: clamp(1rem, 4.8vw, 1.32rem);
+      }
+
       .mobile-hatch .uru {
         width: min(56vw, 230px);
         height: min(56vw, 230px);
@@ -1120,6 +1177,10 @@
       .mobile-hatch-egg {
         top: 47%;
         width: min(48vw, 210px);
+      }
+
+      .mobile-hatch .music-hint {
+        top: max(31svh, 156px);
       }
 
       .mobile-hatch .uru {
@@ -1210,6 +1271,7 @@
           <path d="M4 36 L42 58 L69 25 L98 55 L131 18 L158 48 L190 30 L224 64 L258 38" />
         </svg>
       </div>
+      <button class="music-hint" type="button">알을 톡 터치하면<br>노래가 흘러나와요</button>
 
       <div class="shell" aria-hidden="true">
         <div class="shell-piece shell-left"></div>
@@ -1270,6 +1332,7 @@
           <p>바다 속 조용한 알 하나가<br>천천히 깨어나고 있어요.</p>
         </div>
         <div class="mobile-hatch-egg" aria-hidden="true"></div>
+        <button class="music-hint" type="button">알을 톡 터치하면<br>노래가 흘러나와요</button>
         <div class="mobile-hatch-shells" aria-hidden="true">
           <span class="mobile-shell"></span>
           <span class="mobile-shell right"></span>
@@ -1428,6 +1491,7 @@
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const soundButton = document.querySelector(".sound-toggle");
+    const musicHints = document.querySelectorAll(".music-hint");
     let ctx;
     let masterGain;
     let melodyGain;
@@ -1510,6 +1574,7 @@
     const setSoundButton = () => {
       soundButton.textContent = audioOn ? "♫" : "♪";
       soundButton.setAttribute("aria-label", audioOn ? "배경음 끄기" : "배경음 켜기");
+      document.body.classList.toggle("audio-started", audioOn);
     };
 
     const enableBgm = ({ chime = false } = {}) => {
@@ -1554,6 +1619,10 @@
         playBgmPhrase();
       }
       setSoundButton();
+    });
+
+    musicHints.forEach((hint) => {
+      hint.addEventListener("click", () => enableBgm({ chime: true }));
     });
 
     window.addEventListener("load", () => {
@@ -1755,6 +1824,7 @@
         .to(".egg-wrap", { y: -12, rotate: -3, duration: .25 }, 0.13)
         .to(".egg-wrap", { y: 6, rotate: 4, duration: .2 }, 0.22)
         .to(".story-hello", { opacity: 1, y: -18, duration: .35 }, 0.2)
+        .to(".music-hint", { opacity: 0, y: -22, pointerEvents: "none", duration: .2 }, 0.2)
         .to(".story-hello", { opacity: 0, y: -68, duration: .3 }, 0.43)
         .call(() => playCuteSound("crack"), [], 0.34)
         .to(".crack", { opacity: 1, duration: .2 }, 0.34)
