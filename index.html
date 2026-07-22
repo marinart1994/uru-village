@@ -500,13 +500,17 @@
 
     .mobile-panel {
       position: relative;
-      min-height: 100svh;
+      min-height: 108svh;
       padding: max(54px, env(safe-area-inset-top)) 22px max(48px, env(safe-area-inset-bottom));
       overflow: hidden;
       display: grid;
       place-items: center;
       text-align: center;
       isolation: isolate;
+      scroll-snap-align: start;
+      --reveal: 0;
+      --drift: 0;
+      --scene-progress: 0;
     }
 
     .mobile-panel::before {
@@ -563,6 +567,10 @@
       gap: 20px;
       color: white;
       text-shadow: 0 5px 24px rgba(54,73,145,.24);
+      opacity: calc(.35 + var(--reveal) * .65);
+      transform: translateY(calc((1 - var(--reveal)) * 36px)) scale(calc(.96 + var(--reveal) * .04));
+      transition: opacity .16s linear, transform .16s linear;
+      will-change: opacity, transform;
     }
 
     .mobile-title {
@@ -601,6 +609,7 @@
       box-shadow: inset -22px -32px 54px rgba(255,161,117,.22), inset 26px 18px 60px rgba(255,255,255,.62);
       filter: drop-shadow(0 28px 40px rgba(41,101,152,.22));
       animation: mobileEgg 1.4s ease-in-out infinite alternate;
+      will-change: transform, filter;
     }
 
     .mobile-egg.cracked::before {
@@ -613,6 +622,18 @@
       background: linear-gradient(135deg, transparent 0 10%, rgba(108,91,118,.5) 11% 15%, transparent 16% 29%, rgba(108,91,118,.5) 30% 35%, transparent 36% 50%, rgba(108,91,118,.5) 51% 56%, transparent 57% 100%);
       filter: drop-shadow(0 0 9px rgba(255,255,159,.8));
       clip-path: polygon(0 38%, 17% 68%, 29% 22%, 43% 62%, 55% 15%, 68% 56%, 82% 35%, 100% 70%, 100% 82%, 82% 47%, 68% 70%, 55% 29%, 43% 76%, 29% 36%, 17% 82%, 0 50%);
+      opacity: var(--crack, 1);
+    }
+
+    .mobile-egg.cracked::after {
+      content: "";
+      position: absolute;
+      inset: 14%;
+      border-radius: 50%;
+      opacity: var(--glow, .55);
+      background: radial-gradient(circle, rgba(255,255,147,.92), rgba(255,127,213,.34) 45%, transparent 72%);
+      filter: blur(18px);
+      z-index: -1;
     }
 
     .mobile-shells {
@@ -630,6 +651,7 @@
       background: linear-gradient(160deg, #fff8c7, #fff7e8 58%, #f4dff0);
       clip-path: polygon(0 26%, 9% 12%, 20% 26%, 32% 8%, 48% 25%, 64% 10%, 78% 29%, 100% 16%, 100% 100%, 0 100%);
       filter: drop-shadow(0 14px 18px rgba(80,57,102,.18));
+      will-change: transform;
     }
 
     .mobile-shell.right {
@@ -646,6 +668,7 @@
       transform: none;
       margin: 0 auto -16px;
       animation: mobileFloat 1.9s ease-in-out infinite alternate;
+      will-change: transform, opacity;
     }
 
     .mobile-flora {
@@ -657,8 +680,8 @@
 
     .mobile-flora .plant {
       bottom: 0;
-      transform: none !important;
       opacity: .95;
+      will-change: transform;
     }
 
     .mobile-star {
@@ -668,6 +691,22 @@
       clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 68% 55%, 79% 91%, 50% 68%, 21% 91%, 32% 55%, 2% 35%, 38% 34%);
       filter: drop-shadow(0 0 22px #fff56e);
       animation: mobileStar 1.8s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    .mobile-orb {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      top: var(--top);
+      border-radius: 50%;
+      opacity: calc(.25 + var(--reveal) * .55);
+      background: radial-gradient(circle at 32% 28%, #fff, var(--color) 42%, transparent 72%);
+      filter: drop-shadow(0 0 20px var(--color));
+      transform: translateY(calc(var(--drift) * -28px)) scale(calc(.86 + var(--reveal) * .2));
+      pointer-events: none;
+      will-change: transform, opacity;
     }
 
     @keyframes drift { from { transform: translate(-1%, -1%) rotate(-1deg); } to { transform: translate(1.5%, 1%) rotate(1deg); } }
@@ -712,6 +751,10 @@
     }
 
     @media (max-width: 820px), (pointer: coarse) {
+      html {
+        scroll-snap-type: y proximity;
+      }
+
       .journey {
         min-height: 0;
         background: transparent;
@@ -819,7 +862,9 @@
     </section>
 
     <section class="mobile-story" aria-label="우루 빌리지 모바일 여행">
-      <article class="mobile-panel mobile-sea">
+      <article class="mobile-panel mobile-sea" data-mobile-scene="egg">
+        <span class="mobile-orb" style="--left: 12%; --top: 24%; --size: 42px; --color: #ffffff"></span>
+        <span class="mobile-orb" style="--left: 78%; --top: 18%; --size: 70px; --color: #dfffff"></span>
         <div class="mobile-content">
           <span class="eyebrow">멸종위기동물들이 살아가는 작은 마을</span>
           <h1 class="mobile-title">Welcome to<br>Uru Village</h1>
@@ -828,14 +873,18 @@
         </div>
       </article>
 
-      <article class="mobile-panel mobile-birth">
+      <article class="mobile-panel mobile-birth" data-mobile-scene="crack">
+        <span class="mobile-orb" style="--left: 18%; --top: 28%; --size: 54px; --color: #ff93dd"></span>
+        <span class="mobile-orb" style="--left: 72%; --top: 66%; --size: 46px; --color: #fff56e"></span>
         <div class="mobile-content">
           <div class="mobile-egg cracked" aria-hidden="true"></div>
           <p class="mobile-text">안녕!<br>나는 우루야.</p>
         </div>
       </article>
 
-      <article class="mobile-panel mobile-birth">
+      <article class="mobile-panel mobile-birth" data-mobile-scene="birth">
+        <span class="mobile-orb" style="--left: 14%; --top: 68%; --size: 44px; --color: #72ffe0"></span>
+        <span class="mobile-orb" style="--left: 82%; --top: 24%; --size: 62px; --color: #fff56e"></span>
         <div class="mobile-content">
           <div class="uru" aria-label="우루 캐릭터">
             <div class="gill left"></div>
@@ -859,7 +908,9 @@
         </div>
       </article>
 
-      <article class="mobile-panel mobile-forest">
+      <article class="mobile-panel mobile-forest" data-mobile-scene="forest">
+        <span class="mobile-orb" style="--left: 16%; --top: 20%; --size: 70px; --color: #ff70d1"></span>
+        <span class="mobile-orb" style="--left: 74%; --top: 58%; --size: 56px; --color: #dfff48"></span>
         <div class="mobile-flora" aria-hidden="true">
           <div class="plant a"></div>
           <div class="plant b"></div>
@@ -886,7 +937,9 @@
         </div>
       </article>
 
-      <article class="mobile-panel mobile-night">
+      <article class="mobile-panel mobile-night" data-mobile-scene="night">
+        <span class="mobile-orb" style="--left: 18%; --top: 72%; --size: 46px; --color: #ff70d1"></span>
+        <span class="mobile-orb" style="--left: 78%; --top: 28%; --size: 38px; --color: #72ffe0"></span>
         <div class="mobile-content">
           <span class="mobile-star" aria-hidden="true"></span>
           <div class="uru" aria-label="우루 캐릭터">
@@ -971,98 +1024,86 @@
     const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
     const between = (value, start, end) => clamp((value - start) / (end - start));
     const isMobileScroll = window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
+    let mobileStoryStarted = false;
 
     const setStyle = (selector, styles) => {
       document.querySelectorAll(selector).forEach((element) => Object.assign(element.style, styles));
     };
 
     const runMobileScrollStory = () => {
-      const journey = document.querySelector("#journey");
-      const crackPath = document.querySelector(".crack path");
+      if (mobileStoryStarted) return;
+      mobileStoryStarted = true;
+      const panels = [...document.querySelectorAll(".mobile-panel")];
 
       const update = () => {
-        const scrollable = Math.max(1, journey.offsetHeight - window.innerHeight);
-        const progress = clamp(window.scrollY / scrollable);
-        const introGone = between(progress, 0.04, 0.16);
-        const hello = between(progress, 0.1, 0.18) * (1 - between(progress, 0.23, 0.3));
-        const crack = between(progress, 0.18, 0.35);
-        const birth = between(progress, 0.35, 0.48);
-        const forest = between(progress, 0.5, 0.66);
-        const walk = between(progress, 0.63, 0.8);
-        const village = between(progress, 0.6, 0.72) * (1 - between(progress, 0.78, 0.86));
-        const ending = between(progress, 0.84, 0.96);
-        const eggShake = Math.sin(progress * 90) * crack * 5;
+        const vh = window.innerHeight || 1;
 
-        setStyle(".copy", {
-          opacity: `${1 - introGone}`,
-          transform: `translate(-50%, ${-90 * introGone}px)`,
+        panels.forEach((panel) => {
+          const rect = panel.getBoundingClientRect();
+          const raw = clamp((vh - rect.top) / (vh + rect.height));
+          const center = clamp(1 - Math.abs(rect.top + rect.height * 0.5 - vh * 0.5) / (vh * 0.75));
+          const scene = panel.dataset.mobileScene;
+          const content = panel.querySelector(".mobile-content");
+
+          panel.style.setProperty("--scene-progress", raw.toFixed(3));
+          panel.style.setProperty("--reveal", center.toFixed(3));
+          panel.style.setProperty("--drift", raw.toFixed(3));
+
+          if (content) {
+            content.style.transform = `translateY(${(1 - center) * 34 - raw * 18}px) scale(${0.96 + center * 0.04})`;
+          }
+
+          if (scene === "egg") {
+            const egg = panel.querySelector(".mobile-egg");
+            if (egg) {
+              const wobble = Math.sin(raw * Math.PI * 4) * raw * 4;
+              egg.style.transform = `translateY(${-22 * raw}px) rotate(${wobble}deg) scale(${1 + raw * 0.06})`;
+            }
+          }
+
+          if (scene === "crack") {
+            const egg = panel.querySelector(".mobile-egg");
+            if (egg) {
+              egg.style.setProperty("--crack", between(raw, .16, .6).toFixed(3));
+              egg.style.setProperty("--glow", (.25 + between(raw, .25, .85) * .75).toFixed(3));
+              egg.style.transform = `translateY(${-18 * raw}px) rotate(${Math.sin(raw * 18) * 4}deg) scale(${1 + between(raw, .4, 1) * .08})`;
+            }
+          }
+
+          if (scene === "birth") {
+            const uru = panel.querySelector(".uru");
+            const leftShell = panel.querySelector(".mobile-shell:not(.right)");
+            const rightShell = panel.querySelector(".mobile-shell.right");
+            if (uru) {
+              uru.style.transform = `translateY(${24 - raw * 54}px) scale(${.9 + center * .12})`;
+              uru.style.opacity = `${.5 + center * .5}`;
+            }
+            if (leftShell) leftShell.style.transform = `translate(${-34 * raw}px, ${10 * raw}px) rotate(${-14 * raw}deg)`;
+            if (rightShell) rightShell.style.transform = `scaleX(-1) translate(${-34 * raw}px, ${10 * raw}px) rotate(${-14 * raw}deg)`;
+          }
+
+          if (scene === "forest") {
+            const uru = panel.querySelector(".uru");
+            const flora = panel.querySelector(".mobile-flora");
+            if (uru) {
+              uru.style.transform = `translateX(${Math.sin(raw * Math.PI * 1.4) * 22}px) translateY(${-18 * center}px) scale(${.88 + center * .1})`;
+            }
+            if (flora) {
+              flora.style.transform = `translateX(${-22 + raw * 44}px) translateY(${-18 * center}px)`;
+            }
+          }
+
+          if (scene === "night") {
+            const star = panel.querySelector(".mobile-star");
+            const uru = panel.querySelector(".uru");
+            if (star) {
+              star.style.transform = `translate(${36 * raw}px, ${-26 + 72 * raw}px) rotate(${raw * 130}deg)`;
+            }
+            if (uru) {
+              uru.style.transform = `translateY(${-14 * center}px) scale(${.9 + center * .08})`;
+            }
+          }
         });
-        setStyle(".egg-wrap", {
-          opacity: `${1 - birth}`,
-          transform: `translate(-50%, -50%) rotate(${eggShake}deg) scale(${1 + birth * 0.28})`,
-          filter: `blur(${birth * 14}px) drop-shadow(0 32px 45px rgba(41,101,152,.2))`,
-        });
-        setStyle(".crack", { opacity: `${crack}` });
-        if (crackPath) crackPath.style.strokeDashoffset = `${360 - 360 * crack}`;
-        setStyle(".egg-glow", {
-          opacity: `${crack}`,
-          transform: `scale(${1 + crack * 0.2})`,
-        });
-        setStyle(".shell", {
-          opacity: `${birth * (1 - forest)}`,
-          transform: "translateX(-50%)",
-        });
-        setStyle(".shell-left", {
-          transform: `translate(${-80 * birth}px, ${20 * birth}px) rotate(${-18 * birth}deg)`,
-        });
-        setStyle(".shell-right", {
-          transform: `scaleX(-1) translate(${-80 * birth}px, ${20 * birth}px) rotate(${-18 * birth}deg)`,
-        });
-        setStyle(".uru", {
-          opacity: `${birth}`,
-          transform: `translate(calc(-50% + ${(-18 * village + 18 * walk - 18 * ending).toFixed(2)}vw), calc(-50% + ${(-42 * birth + 96 * forest + 16 * ending).toFixed(2)}px)) scale(${(0.72 + 0.28 * birth - 0.12 * village + 0.12 * ending).toFixed(3)})`,
-        });
-        setStyle(".story-hello", {
-          opacity: `${hello}`,
-          transform: `translate(-50%, ${-28 * hello}px)`,
-        });
-        setStyle(".story-memory", {
-          opacity: `${birth * (1 - forest)}`,
-          transform: `translate(-50%, ${-24 * birth}px)`,
-        });
-        setStyle(".sea", { opacity: `${1 - forest}` });
-        setStyle(".forest", { opacity: `${forest * (1 - ending * 0.75)}` });
-        setStyle(".night", { opacity: `${ending}` });
-        setStyle(".plant", {
-          transform: `translateY(${-56 * forest}px) scale(${1 + 0.05 * forest})`,
-        });
-        setStyle(".plant.c", {
-          transform: `scale(.7) translateY(${-70 * forest}px)`,
-        });
-        setStyle(".plant.d", {
-          transform: `scale(.55) translateY(${-62 * forest}px)`,
-        });
-        setStyle(".path", {
-          opacity: `${forest * (1 - ending * 0.82)}`,
-          transform: `translate(-50%, ${-30 * forest}px)`,
-        });
-        setStyle(".village-copy", {
-          opacity: `${village}`,
-          transform: `translate(-50%, ${18 * village}px)`,
-        });
-        setStyle(".orb", {
-          opacity: `${forest * 0.88 * (1 - ending * 0.7)}`,
-        });
-        setStyle(".stars", { opacity: `${ending}` });
-        setStyle(".falling-star", {
-          opacity: `${ending}`,
-          transform: `translate(${23 * ending}vw, ${66 * ending}svh) rotate(${160 * ending}deg)`,
-        });
-        setStyle(".ending-copy", {
-          opacity: `${ending}`,
-          transform: `translate(-50%, ${16 * ending}px)`,
-        });
-        setStyle(".hint", { opacity: `${1 - ending}` });
       };
 
       update();
@@ -1070,6 +1111,10 @@
       window.addEventListener("resize", update);
       window.addEventListener("orientationchange", () => setTimeout(update, 380));
     };
+
+    if (isMobileScroll) {
+      runMobileScrollStory();
+    }
 
     if (!reduced && !isMobileScroll && hasGsap) {
       ScrollTrigger.config({
