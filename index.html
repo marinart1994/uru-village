@@ -542,11 +542,11 @@
       z-index: 14;
       top: max(8svh, calc(env(safe-area-inset-top) + 26px));
       left: 50%;
-      width: min(88vw, 420px);
+      width: min(84vw, 360px);
       transform: translateX(-50%);
       color: white;
-      padding: 10px 14px;
-      border-radius: 24px;
+      padding: 8px 12px 10px;
+      border-radius: 22px;
       background: linear-gradient(180deg, rgba(91, 215, 234, .24), rgba(255,255,255,.1));
       backdrop-filter: blur(6px);
       text-shadow: 0 3px 10px rgba(35, 48, 118, .32), 0 0 18px rgba(255,255,255,.34);
@@ -554,9 +554,9 @@
     }
 
     .mobile-hatch-copy p {
-      margin-top: 14px;
-      font-size: 1rem;
-      line-height: 1.75;
+      margin-top: 10px;
+      font-size: .9rem;
+      line-height: 1.55;
       font-weight: 700;
       color: rgba(255,255,255,.96);
     }
@@ -566,16 +566,16 @@
       z-index: 15;
       left: 50%;
       bottom: max(6svh, calc(env(safe-area-inset-bottom) + 28px));
-      width: min(90vw, 430px);
+      width: min(84vw, 360px);
       transform: translateX(-50%) translateY(calc((1 - var(--hatch-reveal)) * 24px));
       opacity: var(--hatch-reveal);
-      padding: 12px 16px 14px;
-      border-radius: 28px;
+      padding: 10px 14px 12px;
+      border-radius: 24px;
       background: linear-gradient(180deg, rgba(57, 70, 152, .22), rgba(255, 255, 255, .1));
       backdrop-filter: blur(7px);
       font-family: "Gaegu", cursive;
-      font-size: clamp(1.45rem, 7vw, 2.25rem);
-      line-height: 1.2;
+      font-size: clamp(1.2rem, 5.7vw, 1.85rem);
+      line-height: 1.28;
       font-weight: 700;
       color: #fff9b8;
       text-shadow: 0 3px 10px rgba(35, 28, 91, .46), 0 0 18px rgba(255,255,255,.28);
@@ -728,10 +728,10 @@
     }
 
     .mobile-content {
-      width: min(88vw, 420px);
+      width: min(84vw, 360px);
       display: grid;
       justify-items: center;
-      gap: 20px;
+      gap: 16px;
       color: white;
       text-shadow: 0 5px 24px rgba(54,73,145,.24);
       opacity: calc(.35 + var(--reveal) * .65);
@@ -750,25 +750,49 @@
 
     .mobile-title {
       font-family: "Gaegu", cursive;
-      font-size: clamp(3rem, 18vw, 5.4rem);
-      line-height: .9;
+      font-size: clamp(2.45rem, 12vw, 4rem);
+      line-height: .92;
       color: #fff8bf;
       letter-spacing: 0;
     }
 
+    .mobile-title .title-small {
+      display: block;
+      font-size: .64em;
+      line-height: 1;
+    }
+
+    .mobile-title .title-main {
+      display: block;
+      margin-top: 2px;
+      line-height: .9;
+    }
+
     .mobile-text {
       font-family: "Gaegu", cursive;
-      font-size: clamp(1.65rem, 8vw, 2.55rem);
-      line-height: 1.16;
+      font-size: clamp(1.2rem, 5.8vw, 1.9rem);
+      line-height: 1.28;
       font-weight: 700;
       color: #fff9b8;
     }
 
     .mobile-copy {
-      font-size: 1rem;
-      line-height: 1.75;
+      font-size: .92rem;
+      line-height: 1.62;
       font-weight: 700;
       color: rgba(255,255,255,.96);
+    }
+
+    .mobile-copy span,
+    .mobile-text span,
+    .mobile-hatch-message span {
+      display: block;
+    }
+
+    .mobile-copy span + span,
+    .mobile-text span + span,
+    .mobile-hatch-message span + span {
+      margin-top: .28em;
     }
 
     .mobile-egg {
@@ -1066,7 +1090,7 @@
         <span class="mobile-orb" style="--left: 18%; --top: 72%; --size: 48px; --color: #ff93dd"></span>
         <div class="mobile-hatch-copy">
           <span class="eyebrow">멸종위기동물들이 살아가는 작은 마을</span>
-          <h1 class="mobile-title">Welcome to<br>Uru Village</h1>
+          <h1 class="mobile-title"><span class="title-small">Welcome to</span><span class="title-main">Uru Village</span></h1>
           <p>바다 속 조용한 알 하나가<br>천천히 깨어나고 있어요.</p>
         </div>
         <div class="mobile-hatch-egg" aria-hidden="true"></div>
@@ -1088,7 +1112,7 @@
             <span class="mouth"></span>
           </div>
         </div>
-        <p class="mobile-hatch-message">안녕!<br>나는 우루야.</p>
+        <p class="mobile-hatch-message"><span>안녕!</span><span>나는 우루야.</span></p>
       </div>
     </section>
 
@@ -1098,9 +1122,9 @@
         <span class="mobile-orb" style="--left: 78%; --top: 18%; --size: 70px; --color: #dfffff"></span>
         <div class="mobile-content">
           <span class="eyebrow">멸종위기동물들이 살아가는 작은 마을</span>
-          <h1 class="mobile-title">Welcome to<br>Uru Village</h1>
+          <h1 class="mobile-title"><span class="title-small">Welcome to</span><span class="title-main">Uru Village</span></h1>
           <div class="mobile-egg" aria-hidden="true"></div>
-          <p class="mobile-copy">바다 속 조용한 알 하나가<br>천천히 깨어나고 있어요.</p>
+          <p class="mobile-copy"><span>바다 속 조용한 알 하나가</span><span>천천히 깨어나고 있어요.</span></p>
         </div>
       </article>
 
@@ -1109,7 +1133,7 @@
         <span class="mobile-orb" style="--left: 72%; --top: 66%; --size: 46px; --color: #fff56e"></span>
         <div class="mobile-content">
           <div class="mobile-egg cracked" aria-hidden="true"></div>
-          <p class="mobile-text">안녕!<br>나는 우루야.</p>
+          <p class="mobile-text"><span>안녕!</span><span>나는 우루야.</span></p>
         </div>
       </article>
 
@@ -1135,7 +1159,7 @@
             <span class="mobile-shell"></span>
             <span class="mobile-shell right"></span>
           </div>
-          <p class="mobile-text">세상에서 사라져가는 친구들을<br>기억하기 위해 태어났어.</p>
+          <p class="mobile-text"><span>사라져가는 친구들을</span><span>기억하기 위해 태어났어.</span></p>
         </div>
       </article>
 
@@ -1164,7 +1188,7 @@
             </div>
           </div>
           <h2 class="mobile-title">우루 마을</h2>
-          <p class="mobile-copy">형광빛 숲길을 따라가면<br>작고 둥근 친구들의 이야기가 하나씩 깨어나요.</p>
+          <p class="mobile-copy"><span>형광빛 숲길을 따라가면</span><span>작고 둥근 친구들의 이야기가</span><span>하나씩 깨어나요.</span></p>
         </div>
       </article>
 
@@ -1188,7 +1212,7 @@
             </div>
           </div>
           <h2 class="mobile-title">또 놀러와.</h2>
-          <p class="mobile-copy">우루 마을은<br>작은 빛들을 기억하고 있을게.</p>
+          <p class="mobile-copy"><span>우루 마을은</span><span>작은 빛들을 기억하고 있을게.</span></p>
         </div>
       </article>
     </section>
@@ -1307,8 +1331,8 @@
 
           if (hatchMessage) {
             hatchMessage.innerHTML = progress < .58
-              ? "안녕!<br>나는 우루야."
-              : "세상에서 사라져가는 친구들을<br>기억하기 위해 태어났어.";
+              ? "<span>안녕!</span><span>나는 우루야.</span>"
+              : "<span>사라져가는 친구들을</span><span>기억하기 위해 태어났어.</span>";
           }
         }
 
