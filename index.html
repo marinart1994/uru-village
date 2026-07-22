@@ -1431,6 +1431,10 @@
     let ctx;
     let masterGain;
     let ambienceGain;
+    let melodyGain;
+    let delayNode;
+    let feedbackGain;
+    let bgmLoopTimer;
     let ambienceNodes = [];
     let audioOn = false;
     const soundState = {
@@ -1445,32 +1449,42 @@
       ctx = new (window.AudioContext || window.webkitAudioContext)();
       masterGain = ctx.createGain();
       ambienceGain = ctx.createGain();
+      melodyGain = ctx.createGain();
+      delayNode = ctx.createDelay(1.2);
+      feedbackGain = ctx.createGain();
       masterGain.gain.value = 0;
-      ambienceGain.gain.value = 0.035;
+      ambienceGain.gain.value = 0.055;
+      melodyGain.gain.value = 0.12;
+      delayNode.delayTime.value = 0.34;
+      feedbackGain.gain.value = 0.24;
       ambienceGain.connect(masterGain);
+      melodyGain.connect(masterGain);
+      melodyGain.connect(delayNode);
+      delayNode.connect(feedbackGain);
+      feedbackGain.connect(delayNode);
+      delayNode.connect(masterGain);
       masterGain.connect(ctx.destination);
 
-      [174, 261.63, 329.63].forEach((frequency, index) => {
+      [174, 261.63, 329.63, 392].forEach((frequency, index) => {
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
         oscillator.type = index === 0 ? "sine" : "triangle";
         oscillator.frequency.value = frequency;
-        gainNode.gain.value = index === 0 ? 0.36 : 0.12;
-        oscillator.connect(gainNode);
+        filter.type = "lowpass";
+        filter.frequency.value = 620 + index * 120;
+        gainNode.gain.value = index === 0 ? 0.32 : 0.08;
+        oscillator.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(ambienceGain);
         oscillator.start();
         ambienceNodes.push({ oscillator, gainNode });
       });
 
-      const shimmer = () => {
-        if (!audioOn || !ctx) return;
-        playTone(880 + Math.random() * 260, 0.08, "sine", 0.018, 0.02);
-        setTimeout(shimmer, 1800 + Math.random() * 2200);
-      };
-      setTimeout(shimmer, 1000);
+      startBgmLoop();
     };
 
-    const playTone = (frequency, duration = 0.16, type = "sine", volume = 0.08, delay = 0) => {
+    const playTone = (frequency, duration = 0.16, type = "sine", volume = 0.08, delay = 0, destination = masterGain) => {
       if (!ctx || !audioOn) return;
       const now = ctx.currentTime + delay;
       const oscillator = ctx.createOscillator();
@@ -1481,9 +1495,37 @@
       gainNode.gain.exponentialRampToValueAtTime(volume, now + 0.018);
       gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
       oscillator.connect(gainNode);
-      gainNode.connect(masterGain);
+      gainNode.connect(destination);
       oscillator.start(now);
       oscillator.stop(now + duration + 0.03);
+    };
+
+    const playBgmNote = (frequency, delay = 0, duration = 0.36, volume = 0.055) => {
+      playTone(frequency, duration, "sine", volume, delay, melodyGain);
+      playTone(frequency * 2, duration * 0.55, "triangle", volume * 0.26, delay + 0.015, melodyGain);
+    };
+
+    const playBgmPhrase = () => {
+      if (!ctx || !audioOn) return;
+      const phrase = [
+        [523.25, 0], [659.25, .42], [783.99, .84], [659.25, 1.28],
+        [587.33, 1.86], [698.46, 2.28], [880, 2.74], [783.99, 3.2],
+        [659.25, 4.1], [523.25, 4.56], [587.33, 5.04], [783.99, 5.58],
+      ];
+      phrase.forEach(([frequency, delay], index) => {
+        playBgmNote(frequency, delay, index % 4 === 2 ? .5 : .34, index % 3 === 0 ? .062 : .048);
+      });
+      playTone(1046.5, .18, "sine", .024, 6.24, melodyGain);
+      playTone(1318.5, .16, "sine", .018, 6.52, melodyGain);
+    };
+
+    const startBgmLoop = () => {
+      if (bgmLoopTimer) return;
+      const loop = () => {
+        if (audioOn) playBgmPhrase();
+        bgmLoopTimer = setTimeout(loop, 7600);
+      };
+      bgmLoopTimer = setTimeout(loop, 260);
     };
 
     const playCuteSound = (kind) => {
@@ -1509,8 +1551,11 @@
       if (ctx.state === "suspended") ctx.resume();
 
       audioOn = !audioOn;
-      masterGain.gain.setTargetAtTime(audioOn ? 0.18 : 0.0001, ctx.currentTime, 0.12);
-      if (audioOn) playCuteSound("birth");
+      masterGain.gain.setTargetAtTime(audioOn ? 0.28 : 0.0001, ctx.currentTime, 0.16);
+      if (audioOn) {
+        playCuteSound("birth");
+        playBgmPhrase();
+      }
       soundButton.textContent = audioOn ? "♫" : "♪";
       soundButton.setAttribute("aria-label", audioOn ? "배경음 끄기" : "배경음 켜기");
     });
